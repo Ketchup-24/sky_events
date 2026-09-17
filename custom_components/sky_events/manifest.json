@@ -7,6 +7,9 @@
   "documentation": "https://github.com/Ketchup-24/sky_events",
   "issue_tracker": "https://github.com/Ketchup-24/sky_events/issues",
   "codeowners": [],
+  "after_dependencies": [
+    "weather"
+  ],
   "iot_class": "cloud_polling",
   "requirements": [
     "astronomy-engine==2.1.19"

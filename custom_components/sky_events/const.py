@@ -55,6 +55,9 @@ SOLAR_SAFETY = (
 )
 
 UPDATE_INTERVAL_MINUTES = 5
+# Used only while the cloud forecast is unavailable, so a restart does not
+# leave the outlook reading Unavailable for a full normal interval.
+RETRY_INTERVAL_SECONDS = 60
 NOAA_REFRESH_HOURS = 3
 
 # Nothing downstream uses an eclipse further out than the solar-glasses

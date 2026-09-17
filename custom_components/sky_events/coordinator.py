@@ -54,6 +54,7 @@ from .const import (
     EVENT_STAGE,
     NOAA_KP_URL,
     NOAA_REFRESH_HOURS,
+    RETRY_INTERVAL_SECONDS,
     STORAGE_KEY,
     STORAGE_VERSION,
     UPDATE_INTERVAL_MINUTES,
@@ -196,10 +197,13 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
         if not entity_id:
             return [], None
         try:
+            # entity_id goes in service_data, not target=. With
+            # return_response=True a target= dict does not resolve to entities
+            # and the call fails with "requested response data but did not
+            # match any entities".
             response = await self.hass.services.async_call(
                 "weather", "get_forecasts",
-                {"type": "hourly"},
-                target={"entity_id": entity_id},
+                {"entity_id": entity_id, "type": "hourly"},
                 blocking=True, return_response=True,
             )
         except Exception as err:  # noqa: BLE001
@@ -236,6 +240,17 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
 
         clouds, cloud_updated = await self._async_cloud_forecast()
         cloud_fresh = bool(clouds)
+
+        # A weather integration can be set up but not yet serving forecasts
+        # when this first runs at startup - after_dependencies orders setup,
+        # not readiness. Rather than sit on "Unavailable" for a whole normal
+        # interval, retry quickly until the forecast appears, then settle back.
+        wanted = (
+            timedelta(seconds=RETRY_INTERVAL_SECONDS) if not cloud_fresh
+            else timedelta(minutes=UPDATE_INTERVAL_MINUTES)
+        )
+        if self.update_interval != wanted:
+            self.update_interval = wanted
 
         stale_hours = float(self._option(CONF_STALE_HOURS, DEFAULT_STALE_HOURS))
         source_stale = (
@@ -275,8 +290,9 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
         # ---- local astronomy, off the event loop ----
         events: list[SkyEvent] = []
         meteor_freshness = "unavailable"
+        expiry: datetime | None = None
         try:
-            events, meteor_freshness = await self.hass.async_add_executor_job(
+            events, meteor_freshness, expiry = await self.hass.async_add_executor_job(
                 self._compute_local, now, clouds, thresholds
             )
         except Exception as err:  # noqa: BLE001 - aurora must survive an astronomy failure
@@ -289,7 +305,8 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
         )
 
         # ---- meteor dataset maintenance ----
-        expiry = self.providers.dataset_expiry(self.providers.load_meteor_dataset())
+        # expiry came back from the executor above: reading the dataset here
+        # would be blocking I/O on the event loop.
         if expiry is not None:
             data.meteor_expires = expiry.date().isoformat()
             data.meteor_days_remaining = meteor_dataset_days_remaining(expiry, now)
@@ -325,30 +342,56 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
 
     def _compute_local(
         self, now: datetime, clouds: list[tuple[datetime, float]], thresholds: Thresholds,
-    ) -> tuple[list[SkyEvent], str]:
-        """Runs in an executor: Astronomy Engine searches are CPU-bound."""
+    ) -> tuple[list[SkyEvent], str, datetime | None]:
+        """Runs in an executor: Astronomy Engine searches are CPU-bound and
+        the meteor dataset is read from disk."""
         events = self.providers.eclipse_events(now, clouds, thresholds)
         moon = self.providers.moon_event(now, clouds, thresholds)
         if moon:
             events.append(moon)
-        meteor, freshness = self.providers.meteor_event(now, clouds, thresholds)
+        meteor, freshness, expiry = self.providers.meteor_event(now, clouds, thresholds)
         if meteor:
             events.append(meteor)
-        return events, freshness
+        return events, freshness, expiry
 
     def _aurora_as_event(self, aurora: dict[str, Any], thresholds: Thresholds) -> SkyEvent:
+        """Represent the aurora outlook as one rankable event.
+
+        The display window is deliberately state-dependent, because
+        select_event ranks by window class *before* importance:
+
+        - `Unlikely` / `Unavailable` carry no times at all, so they fall to
+          the `later` class. Giving them a real peak time would promote them
+          to `tonight` and let a nothing-to-see aurora outrank a genuinely
+          upcoming eclipse.
+        - `Look outside now` gets a short window around the present so it
+          ranks `active` - it is happening, not forecast.
+        - Otherwise the forecast Kp peak is the window.
+        """
         state = str(aurora.get("state", "Unavailable"))
         importance = {"Look outside now": 50, "Promising tonight": 30, "Possible": 10}.get(state, 1)
+
+        start = aurora.get("peak_start")
+        end = aurora.get("peak_end")
+        if state == "Look outside now":
+            now = dt_util.utcnow()
+            start, end = now - timedelta(minutes=5), now + timedelta(minutes=30)
+        elif state in {"Unlikely", "Unavailable"}:
+            start, end = None, None
+
+        # Night-keyed so one night's aurora is one event identity across
+        # evaluations, rather than changing at local midnight.
+        night_key = aurora.get("night_key") or "current"
         return SkyEvent(
-            event_id=f"aurora-{dt_util.now().date().isoformat()}",
-            event_type="aurora", subtype=state, title="Aurora outlook",
-            start=aurora.get("peak_start"), peak=aurora.get("peak_start"),
-            end=aurora.get("peak_end"),
+            event_id=f"aurora-{night_key}",
+            event_type="aurora", subtype=state,
+            title="Aurora outlook" if state in {"Unlikely", "Unavailable"} else state,
+            start=start, peak=start, end=end,
             importance=importance,
-            explanation=str(aurora.get("explanation", "")),
+            explanation=str(aurora.get("explanation") or "Aurora forecast is unavailable."),
             action="Check the aurora outlook",
             icon="mdi:aurora",
-            cloud_cover=aurora.get("current_cloud_cover"),
+            cloud_cover=aurora.get("peak_cloud_cover") or aurora.get("current_cloud_cover"),
             details_url=self.details_path,
             extra={"aurora_state": state, "kp": aurora.get("max_kp")},
         )

@@ -183,7 +183,7 @@ class ProviderSmokeTest(unittest.TestCase):
         self.assertTrue(event is None or event.event_type == "moon")
 
     def test_meteor_event_reports_freshness(self):
-        _, freshness = self.providers.meteor_event(self.now, [], self.thresholds)
+        _, freshness, _ = self.providers.meteor_event(self.now, [], self.thresholds)
         self.assertIn(freshness, {"fresh", "expired", "unavailable"})
 
     def test_missing_dataset_is_unavailable_not_a_crash(self):
@@ -191,7 +191,7 @@ class ProviderSmokeTest(unittest.TestCase):
             latitude=49.5, longitude=-124.7, elevation=2, tz=TZ,
             data_path=Path("/nonexistent/meteors.json"),
         )
-        event, freshness = broken.meteor_event(self.now, [], self.thresholds)
+        event, freshness, _ = broken.meteor_event(self.now, [], self.thresholds)
         self.assertIsNone(event)
         self.assertEqual(freshness, "unavailable")
 
@@ -211,7 +211,7 @@ class ProviderSmokeTest(unittest.TestCase):
             provider = SkyEventProviders(
                 latitude=49.5325, longitude=-124.6764, elevation=2, tz=TZ, data_path=path
             )
-            _, freshness = provider.meteor_event(self.now, [], self.thresholds)
+            _, freshness, _ = provider.meteor_event(self.now, [], self.thresholds)
             self.assertEqual(freshness, "fresh", "a malformed row must not abort the provider")
         finally:
             path.unlink()

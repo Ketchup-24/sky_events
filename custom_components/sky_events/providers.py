@@ -188,14 +188,21 @@ class SkyEventProviders:
 
     def meteor_event(
         self, now: datetime, clouds: list[tuple[datetime, float]], thresholds: Thresholds,
-    ) -> tuple[SkyEvent | None, str]:
+    ) -> tuple[SkyEvent | None, str, datetime | None]:
+        """Best current meteor candidate, its dataset freshness, and the
+        dataset's expiry.
+
+        The expiry is returned rather than re-derived by the caller so the
+        dataset file is read exactly once per update - and on the caller's
+        executor thread, never on the event loop.
+        """
         dataset = self.load_meteor_dataset()
         expiry = self.dataset_expiry(dataset)
         if dataset is None or expiry is None:
-            return None, "unavailable"
+            return None, "unavailable", expiry
         freshness = meteor_dataset_freshness(expiry, now)
         if freshness != "fresh":
-            return None, freshness
+            return None, freshness, expiry
 
         local_year = now.astimezone(self.tz).year
         showers = [
@@ -216,7 +223,7 @@ class SkyEventProviders:
                 continue
             if candidate and (best is None or candidate.importance > best.importance):
                 best = candidate
-        return best, freshness
+        return best, freshness, expiry
 
     def _one_meteor_event(
         self, shower: dict[str, Any], now: datetime, clouds: list[tuple[datetime, float]],
