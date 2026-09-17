@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "supported_years": [2026, 2027],
+  "expires_after": "2027-12-31",
+  "maintenance": "Replace this dataset after the IMO publishes each annual Meteor Shower Calendar. Preserve only source-backed annual peak windows; do not extrapolate an expired year.",
+  "source": {
+    "publisher": "International Meteor Organization",
+    "urls": {
+      "2026": "https://imo.net/files/meteor-shower/cal2026.pdf",
+      "2027": "https://imo.net/files/meteor-shower/cal2027.pdf"
+    },
+    "cross_check": "https://www.amsmeteors.org/meteor-showers/2020-meteor-shower-list/8141/"
+  },
+  "showers": [
+    {"year": 2026, "id": "quadrantids", "name": "Quadrantids", "activity_start": "2025-12-26", "activity_end": "2026-01-16", "peak_start_utc": "2026-01-03T18:00:00Z", "peak_end_utc": "2026-01-04T00:00:00Z", "zhr": 120, "ra_hours": 15.33, "dec_degrees": 49.7, "peak_width_hours": 6, "northern": true},
+    {"year": 2026, "id": "lyrids", "name": "Lyrids", "activity_start": "2026-04-17", "activity_end": "2026-04-26", "peak_start_utc": "2026-04-22T03:00:00Z", "peak_end_utc": "2026-04-22T09:00:00Z", "zhr": 18, "ra_hours": 18.13, "dec_degrees": 33.3, "peak_width_hours": 6, "northern": true},
+    {"year": 2026, "id": "eta_aquariids", "name": "Eta Aquariids", "activity_start": "2026-04-15", "activity_end": "2026-05-27", "peak_start_utc": "2026-05-05T21:00:00Z", "peak_end_utc": "2026-05-06T03:00:00Z", "zhr": 60, "ra_hours": 22.47, "dec_degrees": -1.4, "peak_width_hours": 6, "northern": false},
+    {"year": 2026, "id": "perseids", "name": "Perseids", "activity_start": "2026-07-17", "activity_end": "2026-08-29", "peak_start_utc": "2026-08-12T21:00:00Z", "peak_end_utc": "2026-08-13T09:00:00Z", "zhr": 100, "ra_hours": 3.28, "dec_degrees": 58.1, "peak_width_hours": 12, "northern": true},
+    {"year": 2026, "id": "orionids", "name": "Orionids", "activity_start": "2026-10-02", "activity_end": "2026-11-12", "peak_start_utc": "2026-10-21T18:00:00Z", "peak_end_utc": "2026-10-22T06:00:00Z", "zhr": 20, "ra_hours": 6.42, "dec_degrees": 15.8, "peak_width_hours": 12, "northern": true},
+    {"year": 2026, "id": "leonids", "name": "Leonids", "activity_start": "2026-10-28", "activity_end": "2026-12-07", "peak_start_utc": "2026-11-17T18:00:00Z", "peak_end_utc": "2026-11-18T06:00:00Z", "zhr": 15, "ra_hours": 10.27, "dec_degrees": 21.8, "peak_width_hours": 12, "northern": true},
+    {"year": 2026, "id": "geminids", "name": "Geminids", "activity_start": "2026-12-01", "activity_end": "2026-12-21", "peak_start_utc": "2026-12-13T21:00:00Z", "peak_end_utc": "2026-12-14T09:00:00Z", "zhr": 120, "ra_hours": 7.55, "dec_degrees": 32.4, "peak_width_hours": 12, "northern": true},
+    {"year": 2027, "id": "quadrantids", "name": "Quadrantids", "activity_start": "2026-12-26", "activity_end": "2027-01-16", "peak_start_utc": "2027-01-04T00:30:00Z", "peak_end_utc": "2027-01-04T06:30:00Z", "zhr": 120, "ra_hours": 15.33, "dec_degrees": 49.7, "peak_width_hours": 6, "northern": true},
+    {"year": 2027, "id": "lyrids", "name": "Lyrids", "activity_start": "2027-04-17", "activity_end": "2027-04-26", "peak_start_utc": "2027-04-22T03:00:00Z", "peak_end_utc": "2027-04-22T09:00:00Z", "zhr": 18, "ra_hours": 18.13, "dec_degrees": 33.3, "peak_width_hours": 6, "northern": true},
+    {"year": 2027, "id": "eta_aquariids", "name": "Eta Aquariids", "activity_start": "2027-04-15", "activity_end": "2027-05-27", "peak_start_utc": "2027-05-05T21:00:00Z", "peak_end_utc": "2027-05-06T03:00:00Z", "zhr": 60, "ra_hours": 22.47, "dec_degrees": -1.4, "peak_width_hours": 6, "northern": false},
+    {"year": 2027, "id": "perseids", "name": "Perseids", "activity_start": "2027-07-17", "activity_end": "2027-08-29", "peak_start_utc": "2027-08-12T21:00:00Z", "peak_end_utc": "2027-08-13T09:00:00Z", "zhr": 100, "ra_hours": 3.28, "dec_degrees": 58.1, "peak_width_hours": 12, "northern": true},
+    {"year": 2027, "id": "orionids", "name": "Orionids", "activity_start": "2027-10-02", "activity_end": "2027-11-12", "peak_start_utc": "2027-10-21T18:00:00Z", "peak_end_utc": "2027-10-22T06:00:00Z", "zhr": 20, "ra_hours": 6.42, "dec_degrees": 15.8, "peak_width_hours": 12, "northern": true},
+    {"year": 2027, "id": "leonids", "name": "Leonids", "activity_start": "2027-10-28", "activity_end": "2027-12-07", "peak_start_utc": "2027-11-17T18:00:00Z", "peak_end_utc": "2027-11-18T06:00:00Z", "zhr": 15, "ra_hours": 10.27, "dec_degrees": 21.8, "peak_width_hours": 12, "northern": true},
+    {"year": 2027, "id": "geminids", "name": "Geminids", "activity_start": "2027-12-01", "activity_end": "2027-12-21", "peak_start_utc": "2027-12-13T21:00:00Z", "peak_end_utc": "2027-12-14T09:00:00Z", "zhr": 120, "ra_hours": 7.55, "dec_degrees": 32.4, "peak_width_hours": 12, "northern": true}
+  ]
+}

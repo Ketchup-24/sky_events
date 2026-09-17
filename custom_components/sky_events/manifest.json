@@ -1,0 +1,12 @@
+{
+  "domain": "sky_events",
+  "name": "Sky Events",
+  "version": "0.1.0",
+  "config_flow": true,
+  "integration_type": "service",
+  "documentation": "https://github.com/Ketchup-24/ha-sky-events",
+  "issue_tracker": "https://github.com/Ketchup-24/ha-sky-events/issues",
+  "codeowners": [],
+  "iot_class": "cloud_polling",
+  "requirements": ["astronomy-engine==2.1.19"]
+}

@@ -1,0 +1,45 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sky Events",
+        "description": "Observing from {latitude}, {longitude} (this Home Assistant's configured location).",
+        "data": {
+          "weather_entity": "Weather entity for hourly cloud cover",
+          "aurora_probability_entity": "Live aurora likelihood sensor (optional)",
+          "aurora_alert_entity": "Live aurora alert binary sensor (optional)",
+          "details_path": "Dashboard path for notification deep links (optional)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Sky Events is already set up.",
+      "no_location": "Set your Home Assistant location under Settings > System > General first."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Sky Events thresholds",
+        "description": "Kp thresholds depend on your geomagnetic latitude: raise them further from the poles, lower them nearer.",
+        "data": {
+          "cloud_limit": "Usable cloud cover",
+          "possible_kp": "Kp for \"Possible\"",
+          "promising_kp": "Kp for \"Promising tonight\"",
+          "meteor_min_zhr": "Minimum ideal ZHR",
+          "meteor_min_radiant_altitude": "Minimum radiant altitude",
+          "meteor_moon_illumination_limit": "Moon interference limit",
+          "meteor_warn_days": "Warn before meteor data expires",
+          "moonrise_corridor_enabled": "Limit moonrise to a viewing corridor",
+          "moonrise_azimuth_min": "Corridor azimuth minimum",
+          "moonrise_azimuth_max": "Corridor azimuth maximum",
+          "stale_hours": "Treat NOAA forecast as stale after",
+          "details_path": "Dashboard path for deep links"
+        }
+      }
+    },
+    "error": {
+      "promising_below_possible": "The \"Promising tonight\" Kp must be at or above the \"Possible\" Kp."
+    }
+  }
+}
