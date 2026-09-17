@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN
 from .coordinator import SkyEventsCoordinator
@@ -106,6 +107,16 @@ class NoteworthySkyEventSensor(SkyEventsBaseSensor):
         data = self.coordinator.data
         selected = data.selected
         attrs: dict[str, Any] = {
+            # display_title and local_display_time exist for dashboard and
+            # e-ink templates that render a title/time without re-deriving
+            # them from the raw timestamps.
+            "display_title": selected.title if selected else None,
+            "local_display_time": (
+                selected.peak.astimezone(self.coordinator.tz).strftime("%a %-I:%M %p %Z")
+                if selected and selected.peak else None
+            ),
+            "source": "Astronomy Engine; NOAA SWPC Kp where applicable",
+            "source_updated": dt_util.utcnow().isoformat(),
             "meteor_data_freshness": data.meteor_freshness,
             "meteor_data_expires": data.meteor_expires,
             "meteor_data_days_remaining": data.meteor_days_remaining,

@@ -309,6 +309,10 @@ class SkyEventProviders:
                 "activity_start": shower.get("activity_start"),
                 "activity_end": shower.get("activity_end"),
                 "peak_utc": peak_midpoint.isoformat(),
+                "best_viewing_window": (
+                    f"{window_start.astimezone(self.tz).strftime('%a %-I:%M %p')}–"
+                    f"{window_end.astimezone(self.tz).strftime('%-I:%M %p %Z')}"
+                ),
                 "radiant_altitude": round(radiant_altitude, 1),
                 "moon_illumination": round(illumination, 3),
                 "moon_altitude": round(moon_altitude, 1),
