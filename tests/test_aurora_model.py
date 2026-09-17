@@ -1,4 +1,4 @@
-"""Focused tests for Hornby aurora forecast classification."""
+"""Focused tests for aurora forecast classification."""
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path

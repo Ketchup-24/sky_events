@@ -187,10 +187,10 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
     async def _async_cloud_forecast(self) -> tuple[list[tuple[datetime, float]], datetime | None]:
         """Hourly cloud cover, fetched straight from the weather integration.
 
-        The AppDaemon original needed a template sensor to cache
-        weather.get_forecasts and then guessed the cache's freshness from
-        last_updated. Calling the service directly removes both the cache and
-        the guesswork: the data is as fresh as this call.
+        Calling the service directly means there is no cached copy to keep
+        fresh and no freshness to infer: the data is exactly as current as
+        this call. An empty result is reported as such rather than being
+        treated as clear skies.
         """
         entity_id = self._option(CONF_WEATHER_ENTITY, None)
         if not entity_id:
@@ -358,10 +358,10 @@ class SkyEventsCoordinator(DataUpdateCoordinator[SkyEventsData]):
     async def _async_announce(self, key: str, payload: dict[str, Any]) -> None:
         """Fire a stage event once, ever.
 
-        Firing a bus event is local and cannot partially fail, so unlike the
-        AppDaemon original there is no notion of a stage being "consumed" by a
-        delivery that never happened. Whether anyone is told is the listening
-        automation's decision, not this integration's.
+        Firing a bus event is local and cannot partially fail, so a stage can
+        never be "consumed" by a delivery that never happened. Whether anyone
+        is actually told is the listening automation's decision, not this
+        integration's.
         """
         if key in self._stages:
             return

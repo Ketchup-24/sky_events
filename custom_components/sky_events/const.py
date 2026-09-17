@@ -57,9 +57,10 @@ SOLAR_SAFETY = (
 UPDATE_INTERVAL_MINUTES = 5
 NOAA_REFRESH_HOURS = 3
 
-# Nothing downstream uses an eclipse further out than the solar glasses
-# reminder, so the local eclipse search only has to look this far ahead. The
-# AppDaemon original searched a decade on every evaluation.
+# Nothing downstream uses an eclipse further out than the solar-glasses
+# reminder, so the local eclipse search only has to look this far ahead.
+# Searching further is pure waste: the iterative local-eclipse solver runs on
+# every update.
 ECLIPSE_HORIZON_DAYS = 400
 
 STORAGE_VERSION = 1

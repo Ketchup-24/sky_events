@@ -1,6 +1,6 @@
 """Local astronomy providers: eclipses, full-moon rises and meteor showers.
 
-Deliberately free of Home Assistant and AppDaemon imports. Everything here is
+Deliberately free of Home Assistant imports. Everything here is
 CPU-bound (Astronomy Engine runs iterative numerical searches), so the caller
 runs it in an executor and can unit-test it directly.
 
